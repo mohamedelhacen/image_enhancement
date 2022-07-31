@@ -2,39 +2,41 @@ import tkinter as tk
 from tkinter import filedialog
 from PIL import ImageTk, Image
 
+import numpy as np
 import cv2
 from outils import contrast_enhancement, blurring_image, image_thresholding, image_sharpening
 
 root = tk.Tk()
 root.title("Image Enhancement")
-root.geometry("720x800")
+# root.geometry("720x800")
+
+book_image = Image.open('book.jpg')
+image_book = ImageTk.PhotoImage(book_image)
+frame = tk.Frame(root)
+label = tk.Label(frame, image=image_book)
+label.pack(fill='both')
+frame.grid(row=1, column=0, columnspan=16)
 
 
-# def process_and_show(image_path):
-#
-#     image = Image.open(image_path)
-#     image = ImageTk.PhotoImage(image)
-#     label = tk.Label(root, image=image)
-#     label.grid(row=1, column=0, columnspan=4)
-#     root.mainloop()
+def show_image(image):
+    image_tk = ImageTk.PhotoImage(image)
+    # frame = tk.Frame(root)
+    # label = tk.Label(frame, image=image_tk)
+    label.configure(image=image_tk)
+    label.image = image_tk
+    label.pack(fill='both')
+    frame.grid(row=1, column=0, columnspan=16)
+
+    edit_image(image)
+    frame.mainloop()
 
 
-def select_image():
 
-    path = filedialog.askopenfilename(initialdir='', title='Select an image',
-                                       filetypes=(('PNG files', ['*.png', '*.PNG']), ('JPEG files', ['*.jpg', '*.jpeg'])))
-    # process_and_show(path)
-    image = Image.open(path)
-    w, h = image.size
-    root.geometry(f"{w+20}x{h+70}")
-    image = ImageTk.PhotoImage(image)
-    label = tk.Label(root, image=image)
-    label.grid(row=1, column=0, columnspan=16)
-
-    enhance_contrast = tk.Button(root, text="Enhance contrast", state='active', command=lambda: contrast(path))
-    blurring = tk.Button(root, text="Blurring", state='active', command=lambda: blur(path))
-    thresholding = tk.Button(root, text="Change thresholding", state='active', command=lambda: threshold(path))
-    sharpening = tk.Button(root, text="Sharpening", state='active', command=lambda: sharpen(path))
+def edit_image(image):
+    enhance_contrast = tk.Button(root, text="Enhance contrast", state='active', command=lambda: contrast(image))
+    blurring = tk.Button(root, text="Blurring", state='active', command=lambda: blur(image))
+    thresholding = tk.Button(root, text="Change thresholding", state='active', command=lambda: threshold(image))
+    sharpening = tk.Button(root, text="Sharpening", state='active', command=lambda: sharpen(image))
     # original = tk.Button(root, text="Show original", state='active', command=)
 
     enhance_contrast.grid(row=2, column=2,  padx=2)
@@ -44,48 +46,50 @@ def select_image():
     root.mainloop()
 
 
-def contrast(im_path):
-    image = cv2.imread(im_path)
-    image1 = contrast_enhancement(image)
-    image1_rgb = cv2.cvtColor(image1, cv2.COLOR_BGR2RGB)
-    image1 = Image.fromarray(image1_rgb)
-    image1 = ImageTk.PhotoImage(image1)
-    label1 = tk.Label(root, image=image1)
-    label1.grid(row=1, column=0, columnspan=4)
+def select_image():
+
+    path = filedialog.askopenfilename(initialdir='', title='Select an image',
+                                      filetypes=(('PNG files', ['*.png', '*.PNG']),
+                                                  ('JPEG files', ['*.jpg', '*.jpeg'])))
+    image = Image.open(path)
+    show_image(image)
     root.mainloop()
 
 
-def blur(im_path):
-    image = cv2.imread(im_path)
-    image1 = blurring_image(image)
+def contrast(image):
+    array = np.array(image)
+    image_cv = cv2.cvtColor(array, cv2.COLOR_RGB2BGR)
+    image1 = contrast_enhancement(image_cv)
     image1_rgb = cv2.cvtColor(image1, cv2.COLOR_BGR2RGB)
     image1 = Image.fromarray(image1_rgb)
-    image1 = ImageTk.PhotoImage(image1)
-    label1 = tk.Label(root, image=image1)
-    label1.grid(row=1, column=0, columnspan=4)
-    root.mainloop()
+    show_image(image1)
 
 
-def threshold(im_path):
-    image = cv2.imread(im_path)
-    image1 = image_thresholding(image)
+def blur(image):
+    array = np.array(image)
+    image_cv = cv2.cvtColor(array, cv2.COLOR_RGB2BGR)
+    image1 = blurring_image(image_cv)
     image1_rgb = cv2.cvtColor(image1, cv2.COLOR_BGR2RGB)
     image1 = Image.fromarray(image1_rgb)
-    image1 = ImageTk.PhotoImage(image1)
-    label1 = tk.Label(root, image=image1)
-    label1.grid(row=1, column=0, columnspan=4)
-    root.mainloop()
+    show_image(image1)
 
 
-def sharpen(im_path):
-    image = cv2.imread(im_path)
-    image1 = image_sharpening(image)
+def threshold(image):
+    array = np.array(image)
+    image_cv = cv2.cvtColor(array, cv2.COLOR_RGB2BGR)
+    image1 = image_thresholding(image_cv)
     image1_rgb = cv2.cvtColor(image1, cv2.COLOR_BGR2RGB)
     image1 = Image.fromarray(image1_rgb)
-    image1 = ImageTk.PhotoImage(image1)
-    label1 = tk.Label(root, image=image1)
-    label1.grid(row=1, column=0, columnspan=4)
-    root.mainloop()
+    show_image(image1)
+
+
+def sharpen(image):
+    array = np.array(image)
+    image_cv = cv2.cvtColor(array, cv2.COLOR_RGB2BGR)
+    image1 = image_sharpening(image_cv)
+    image1_rgb = cv2.cvtColor(image1, cv2.COLOR_BGR2RGB)
+    image1 = Image.fromarray(image1_rgb)
+    show_image(image1)
 
 
 welcoming_text = tk.Label(root, text="For editing an image press the Select an image button bellow")
