@@ -10,7 +10,7 @@ root = tk.Tk()
 root.title("Image Enhancement")
 # root.geometry("720x800")
 
-book_image = Image.open('book.jpg')
+book_image = Image.open('apple.jpg')
 image_book = ImageTk.PhotoImage(book_image)
 frame = tk.Frame(root)
 label = tk.Label(frame, image=image_book)
